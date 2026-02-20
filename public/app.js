@@ -181,13 +181,10 @@
         // Use the proxy endpoint
         const downloadUrl = `/api/download?url=${encodeURIComponent(videoUrl)}&filename=${encodeURIComponent(filename)}`;
 
-        // Create a hidden anchor and trigger download
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = `${filename}.mp4`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Navigate to the download URL — the server sends Content-Disposition: attachment,
+        // so the browser will download the file instead of navigating away.
+        // This works reliably on both desktop and mobile browsers.
+        window.location.href = downloadUrl;
 
         // Show "Download another video" button after a brief delay
         setTimeout(() => {
