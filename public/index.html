@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TikSave — Download TikTok Videos Without Watermark</title>
+  <meta name="description"
+    content="Download TikTok videos without watermark in HD quality. Free, fast, and easy to use. No login required." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Animated background blobs -->
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <main class="container">
+    <!-- Header -->
+    <header class="header">
+      <a href="#" id="logoLink" class="logo">
+        <svg class="logo-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="48" height="48" rx="12" fill="url(#logo-grad)" />
+          <path d="M32 14h-4a6 6 0 0 1-6-6h-4v24a4 4 0 1 1-4-4v-4a8 8 0 1 0 8 8V18a10 10 0 0 0 6 2h4v-6z"
+            fill="white" />
+          <defs>
+            <linearGradient id="logo-grad" x1="0" y1="0" x2="48" y2="48">
+              <stop stop-color="#ee1d52" />
+              <stop offset="1" stop-color="#69c9d0" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <h1 class="logo-text">Tik<span>Save</span></h1>
+      </a>
+      <p class="tagline">Download TikTok videos without watermark — HD quality, instant & free</p>
+    </header>
+
+    <!-- Input Section -->
+    <section class="input-section" id="inputSection">
+      <div class="input-card glass-card">
+        <div class="input-wrapper">
+          <div class="input-glow"></div>
+          <input type="url" id="urlInput" class="url-input" placeholder="Paste TikTok video link here..."
+            autocomplete="off" spellcheck="false" />
+          <button id="downloadBtn" class="download-btn" type="button">
+            <span class="btn-text">Download</span>
+            <span class="btn-loader">
+              <svg class="spinner" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+              </svg>
+            </span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        </div>
+        <p class="input-hint">Supports TikTok video links, short links (vm.tiktok.com), and shared links</p>
+      </div>
+    </section>
+
+    <!-- Error Toast -->
+    <div class="toast" id="errorToast">
+      <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="15" y1="9" x2="9" y2="15" />
+        <line x1="9" y1="9" x2="15" y2="15" />
+      </svg>
+      <span id="errorMessage">An error occurred</span>
+    </div>
+
+    <!-- Video Preview Card -->
+    <section class="preview-section" id="previewSection">
+      <div class="preview-card glass-card">
+        <div class="preview-media">
+          <img id="previewThumb" src="" alt="Video thumbnail" class="preview-thumb" />
+          <div class="preview-duration" id="previewDuration">0:00</div>
+          <div class="preview-quality" id="previewQuality">HD</div>
+        </div>
+        <div class="preview-info">
+          <div class="author-row">
+            <img id="authorAvatar" src="" alt="" class="author-avatar" />
+            <div class="author-details">
+              <span class="author-name" id="authorName">Author</span>
+              <span class="author-username" id="authorUsername">@username</span>
+            </div>
+          </div>
+          <p class="preview-title" id="previewTitle">Video title</p>
+          <div class="stats-row">
+            <div class="stat">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span id="statLikes">0</span>
+            </div>
+            <div class="stat">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z" />
+              </svg>
+              <span id="statComments">0</span>
+            </div>
+            <div class="stat">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z" />
+              </svg>
+              <span id="statShares">0</span>
+            </div>
+            <div class="stat">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+              </svg>
+              <span id="statPlays">0</span>
+            </div>
+          </div>
+          <div class="download-actions">
+            <button id="dlHD" class="dl-btn dl-btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download HD — No Watermark
+            </button>
+            <button id="dlSD" class="dl-btn dl-btn-secondary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Download SD
+            </button>
+          </div>
+          <button id="downloadAnother" class="dl-btn dl-another-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+            Download Another Video
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-section">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps-grid">
+        <div class="step-card glass-card">
+          <div class="step-number">1</div>
+          <h3>Copy Link</h3>
+          <p>Open TikTok, tap share on a video, and copy the link</p>
+        </div>
+        <div class="step-card glass-card">
+          <div class="step-number">2</div>
+          <h3>Paste & Fetch</h3>
+          <p>Paste the link above and click the download button</p>
+        </div>
+        <div class="step-card glass-card">
+          <div class="step-number">3</div>
+          <h3>Save Video</h3>
+          <p>Choose HD quality and save the video without watermark</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>TikSave — Free TikTok Video Downloader &middot; No watermark &middot; HD Quality</p>
+      <p class="footer-note">We do not store any videos. All downloads are processed in real-time.</p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
