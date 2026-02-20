@@ -109,7 +109,7 @@ app.get('/api/download', async (req, res) => {
 
     const safeName = (filename || 'tiktok_video').replace(/[^a-zA-Z0-9_-]/g, '_');
 
-    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment; filename="${safeName}.mp4"`);
 
     if (response.headers['content-length']) {
