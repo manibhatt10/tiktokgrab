@@ -550,6 +550,12 @@ body {
   transform: translateY(0) scale(0.98);
 }
 
+.dl-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none !important;
+}
+
 /* Logo clickable link */
 .logo {
   text-decoration: none;

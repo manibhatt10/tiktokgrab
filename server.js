@@ -104,13 +104,15 @@ app.get('/api/download', async (req, res) => {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Referer': 'https://www.tiktok.com/',
       },
-      timeout: 60000,
+      timeout: 120000, // 2 minutes for larger HD videos
     });
 
     const safeName = (filename || 'tiktok_video').replace(/[^a-zA-Z0-9_-]/g, '_');
 
     res.setHeader('Content-Type', 'video/mp4');
     res.setHeader('Content-Disposition', `attachment; filename="${safeName}.mp4"`);
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Accept-Ranges', 'none');
 
     if (response.headers['content-length']) {
       res.setHeader('Content-Length', response.headers['content-length']);

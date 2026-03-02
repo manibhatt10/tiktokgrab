@@ -166,7 +166,7 @@
         return `${y}${mo}${d}_${h}${mi}${s}`;
     }
 
-    function triggerDownload(videoUrl, quality) {
+    async function triggerDownload(videoUrl, quality) {
         if (!videoUrl) {
             showError('Download URL is not available.');
             return;
@@ -181,16 +181,89 @@
         // Use the proxy endpoint
         const downloadUrl = `/api/download?url=${encodeURIComponent(videoUrl)}&filename=${encodeURIComponent(filename)}`;
 
-        // Navigate to the download URL — the server sends Content-Disposition: attachment,
-        // so the browser will download the file instead of navigating away.
-        // This works reliably on both desktop and mobile browsers.
-        window.location.href = downloadUrl;
+        // Determine which button was clicked to show progress on it
+        const activeBtn = quality === 'HD' ? dlHD : dlSD;
+        const originalBtnText = activeBtn.innerHTML;
+        activeBtn.disabled = true;
 
-        // Show "Download another video" button after a brief delay
-        setTimeout(() => {
+        try {
+            // Show "Downloading..." state
+            activeBtn.innerHTML = `
+                <svg class="spinner" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="45" stroke-dashoffset="15" stroke-linecap="round"/>
+                </svg>
+                Downloading...`;
+
+            // Fetch the video as a Blob — this ensures the full file is downloaded
+            // before triggering the save dialog. Fixes mobile browsers that fail
+            // with window.location.href for large HD video streams.
+            const response = await fetch(downloadUrl);
+
+            if (!response.ok) {
+                throw new Error('Download failed');
+            }
+
+            // Track download progress if Content-Length is available
+            const contentLength = response.headers.get('Content-Length');
+            const total = contentLength ? parseInt(contentLength, 10) : 0;
+
+            if (response.body && total > 0) {
+                // Stream with progress tracking
+                const reader = response.body.getReader();
+                const chunks = [];
+                let received = 0;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value);
+                    received += value.length;
+
+                    const percent = Math.round((received / total) * 100);
+                    activeBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        ${percent}%`;
+                }
+
+                const blob = new Blob(chunks, { type: 'video/mp4' });
+                saveBlobAsFile(blob, `${filename}.mp4`);
+            } else {
+                // No Content-Length or no ReadableStream — download entire blob at once
+                const blob = await response.blob();
+                saveBlobAsFile(blob, `${filename}.mp4`);
+            }
+        } catch (err) {
+            console.error('Blob download failed, trying fallback:', err);
+            // Fallback: open in a new tab — this still works on most mobile browsers
+            // better than window.location.href for large files
+            window.open(downloadUrl, '_blank');
+        } finally {
+            // Restore button
+            activeBtn.innerHTML = originalBtnText;
+            activeBtn.disabled = false;
             isDownloading = false;
             downloadAnother.classList.add('visible');
-        }, 1500);
+        }
+    }
+
+    function saveBlobAsFile(blob, filename) {
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+
+        // Clean up after a short delay
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl);
+        }, 1000);
     }
 
     // ---- Event Listeners ----
